@@ -1,81 +1,47 @@
 name: Automated JMeter Tests
  
 on: 
-
   push:
-
     branches: 
-
       - main
  
 jobs:
-
   automated-jmeter-tests:
-
     runs-on: ubuntu-latest
  
     steps:
-
       - name: Checkout Code
-
         uses: actions/checkout@v4
  
       - name: Set Up JMeter
-
         run: |
-
           sudo apt-get update
-
           sudo apt-get install -y jmeter
+
+      - name: Update JMeter Security Config
+        run: echo "org.apache.jmeter.save.ScriptWrapper" >> /usr/share/jmeter/bin/jmeter.properties
  
       - name: Run JMeter Tests
-
         run: |
-
-          # Ensure we're in the correct directory
-
-          jmeter -n -t HTTP_Request-000226.jmx \
-
-          -l result.jtl \
-
-          -Jdata.file=EdwiseCsv.csv \
-
-          -e -o html
+          jmeter -n -t HTTP_Request-000226.jmx -l result.jtl -Jdata.file=EdwiseCsv.csv -e -o html
  
       - name: List Current Directory
-
         run: |
-
           echo "Current directory:"
-
           pwd
-
           echo "Listing files:"
-
           ls -la
  
       - name: List HTML Report Directory
-
         run: |
-
           echo "Listing HTML report directory:"
-
           ls -la html
  
       - name: Upload Results
-
         uses: actions/upload-artifact@v3
-
         with:
-
           name: jmeter-results
-
           path: |
-
             result.jtl
-
-            html  # This uploads the entire HTML report folder
-
+            html
           if-no-files-found: error
-
- 
