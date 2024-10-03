@@ -22,16 +22,15 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
- 
-      # Runs a single command using the runners shell
-      - name: JMeter Test
-        uses: QAInsights/PerfAction@v5.6.2
-        with:
-          test-plan-path: jmeter -n -t .github/workflows/HTTP Request-000235.jmx -l .github/workflows -e -o .github/workflows
-          args: ".github/workflows/EdwiseCsv.csv"
-      - name: Upload Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: jmeter-results
-          path: .github/workflows
-          if-no-files-found: error
+      
+      # Install JMeter using a package manager
+      - name: Install JMeter
+        run: sudo apt-get update && sudo apt-get install -y jmeter
+
+      # Run JMeter using the CLI with your specific test plan and CSV file
+      - name: Run JMeter Test
+        run: |
+          jmeter -n -t .github/workflows/HTTP\ Request-000235.jmx \
+                 -l .github/workflows/results.jtl \
+                 -Jcsv_file=.github/workflows/EdwiseCsv.csv \
+                 -e -o .github/workflows/report
