@@ -6,58 +6,52 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # Jobs define the tasks that are run
 jobs:
   jmeter-test:
-    # Use the Windows latest runner
     runs-on: windows-latest
 
     steps:
-      # Step 1: Check out the repository code
       - uses: actions/checkout@v4
 
-      # Step 2: Install JMeter on Windows
       - name: Install JMeter on Windows
         run: |
           choco install jmeter -y
 
-      # Step 3: Ensure JMX and CSV files exist
       - name: Verify Test Files
         run: |
-          if (Test-Path "HTTP_Request-000226.jmx") { 
+          if (Test-Path ".\github\workflows\HTTP_Request-000226.jmx") { 
             Write-Host "Test plan found."
           } else {
             Write-Host "Error: Test plan not found!"
             exit 1
           }
-          if (Test-Path "EdwiseCsv.csv") { 
+          if (Test-Path ".\github\workflows\EdwiseCsv.csv") { 
             Write-Host "CSV file found."
           } else {
             Write-Host "Error: CSV file not found!"
             exit 1
           }
 
-      # Step 4: Run JMeter test
       - name: Run JMeter Test
         run: |
-          jmeter -n -t "HTTP_Request-000226.jmx" -l ".\github\workflows\results.jtl" -Jcsv_file="EdwiseCsv.csv" -Jjmeter.save.saveservice.output_format=xml -j ".\github\workflows\jmeter.log"
-      
+          jmeter -n -t ".\github\workflows\HTTP_Request-000226.jmx" \
+                 -l ".\github\workflows\results.jtl" \
+                 -Jcsv_file=".\\github\\workflows\\EdwiseCsv.csv" \
+                 -Jjmeter.save.saveservice.output_format=xml \
+                 -j ".\github\workflows\jmeter.log"
 
-      # Step 5: Verify if the results file was generated
-      - name: Verify JMeter Results
-        run:  type ".\github\workflows\jmeter.log"
-
-      # Step 6: Generate JMeter HTML report from the results
-      - name: Generate JMeter HTML Report
+      - name: Show JMeter Logs
         run: |
-          jmeter -g .\github\workflows\results.jtl `
-                 -o .\github\workflows\report
+          type ".\github\workflows\jmeter.log"
 
-      # Step 7: Upload the generated HTML report as an artifact for review
+      - name: Generate JMeter HTML Report from the results
+        run: |
+          jmeter -g ".\github\workflows\results.jtl" `
+                 -o ".\github\workflows\report"
+
       - name: Upload JMeter HTML Report
         uses: actions/upload-artifact@v3
         with:
