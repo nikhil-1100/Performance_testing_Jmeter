@@ -21,7 +21,7 @@ jobs:
       
       - name: Run JMeter Tests
         run: |
-          jmeter -n -t HTTP_Request-000226.jmx -l result.jtl -Jdata.file=EdwiseCsv.csv -e -o html
+          jmeter -n -t HTTP_Request-000226.jmx -l result.jtl -Jdata.file=EdwiseCsv.csv -o html
  
       - name: List Current Directory
         run: |
