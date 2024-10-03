@@ -1,43 +1,81 @@
-name: CI
+name: Automated JMeter Tests
+ 
+on: 
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    branches: 
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+      - main
+ 
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+
+  automated-jmeter-tests:
+
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+ 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-      
-      # Install JMeter using a package manager
-      - name: Install JMeter
-        run: sudo apt-get update && sudo apt-get install -y jmeter
 
-      # Run JMeter using the CLI with your specific test plan and CSV file
-      - name: Run JMeter Test
-        run: |
-          jmeter -n -t .github/workflows/HTTP_Request-000235.jmx \
-                 -l .github/workflows/results.jtl \
-                 -Jcsv_file=.github/workflows/EdwiseCsv.csv \
-                 -Jjmeter.save.saveservice.output_format=xml \
-                 -Djm.property=xstream.allow.com.thoughtworks.xstream.security.ForbiddenClassException=org.apache.jmeter.save.ScriptWrapper
+      - name: Checkout Code
 
-      # Generate HTML report from the results
-      - name: Generate JMeter HTML Report
+        uses: actions/checkout@v4
+ 
+      - name: Set Up JMeter
+
         run: |
-          jmeter -g .github/workflows/results.jtl \
-                 -o .github/workflows/report
+
+          sudo apt-get update
+
+          sudo apt-get install -y jmeter
+ 
+      - name: Run JMeter Tests
+
+        run: |
+
+          # Ensure we're in the correct directory
+
+          jmeter -n -t .github/workflows/HTTP\ Request-000235.jmx \
+
+          -l result.jtl \
+
+          -Jdata.file=.github/workflows/EdwiseCsv.csv \
+
+          -e -o html
+ 
+      - name: List Current Directory
+
+        run: |
+
+          echo "Current directory:"
+
+          pwd
+
+          echo "Listing files:"
+
+          ls -la
+ 
+      - name: List HTML Report Directory
+
+        run: |
+
+          echo "Listing HTML report directory:"
+
+          ls -la html
+ 
+      - name: Upload Results
+
+        uses: actions/upload-artifact@v3
+
+        with:
+
+          name: jmeter-results
+
+          path: |
+
+            result.jtl
+
+            html  # This uploads the entire HTML report folder
+
+          if-no-files-found: error
+
+ 
