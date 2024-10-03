@@ -27,11 +27,11 @@ jobs:
       - name: JMeter Test
         uses: QAInsights/PerfAction@v5.6.2
         with:
-          test-plan-path: jmeter -n -t .github/workflows/HTTP Request-000235.jmx -l .github/workflows/result -e -o .github/workflows/html 
+          test-plan-path: jmeter -n -t .github/workflows/HTTP Request-000235.jmx -l .github/workflows -e -o .github/workflows
           args: ".github/workflows/EdwiseCsv.csv"
       - name: Upload Results
         uses: actions/upload-artifact@v3
         with:
           name: jmeter-results
-          path: .github/workflows/result
+          path: .github/workflows
           if-no-files-found: error
