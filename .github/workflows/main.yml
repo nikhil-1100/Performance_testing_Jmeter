@@ -34,11 +34,11 @@ jobs:
 
           # Ensure we're in the correct directory
 
-          jmeter -n -t HTTP_Request-000226.jmx\
+          jmeter -n -t "HTTP_Request-000226.jmx"\
 
-          -l result.jtl \
+          -l "result.jtl" \
 
-          -Jdata.file=EdwiseCsv.csv \
+          -Jdata.file="EdwiseCsv.csv" \
 
           -e -o html
  
