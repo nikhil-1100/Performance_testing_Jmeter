@@ -1,81 +1,73 @@
-name: Automated JMeter Tests
- 
-on: 
+name: JMeter Test CI
 
+# Controls when the workflow will run
+on:
   push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
-    branches: 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
-      - main
- 
+# Jobs define the tasks that are run
 jobs:
+  jmeter-test:
+    # Use the Windows latest runner
+    runs-on: windows-latest
 
-  automated-jmeter-tests:
-
-    runs-on: ubuntu-latest
- 
     steps:
+      # Step 1: Check out the repository code
+      - uses: actions/checkout@v4
 
-      - name: Checkout Code
-
-        uses: actions/checkout@v4
- 
-      - name: Set Up JMeter
-
+      # Step 2: Install JMeter on Windows
+      - name: Install JMeter on Windows
         run: |
+          choco install jmeter -y
 
-          sudo apt-get update
-
-          sudo apt-get install -y jmeter
- 
-      - name: Run JMeter Tests
-
+      # Step 3: Ensure JMX and CSV files exist
+      - name: Verify Test Files
         run: |
+          if (Test-Path ".\github\workflows\your_test_plan.jmx") { 
+            Write-Host "Test plan found."
+          } else {
+            Write-Host "Error: Test plan not found!"
+            exit 1
+          }
+          if (Test-Path ".\github\workflows\your_data_file.csv") { 
+            Write-Host "CSV file found."
+          } else {
+            Write-Host "Error: CSV file not found!"
+            exit 1
+          }
 
-          # Ensure we're in the correct directory
-
-          jmeter -n -t "HTTP_Request-000226.jmx"\
-
-          -l "result.jtl" \
-
-          -Jdata.file="EdwiseCsv.csv" \
-
-          -e -o html
- 
-      - name: List Current Directory
-
+      # Step 4: Run JMeter test
+      - name: Run JMeter Test
         run: |
+          jmeter -n -t HTTP_Request-000226.jmx `
+                 -l .\github\workflows\results.jtl `
+                 -Jcsv_file=EdwiseCsv.csv `
+                 -Jjmeter.save.saveservice.output_format=xml
 
-          echo "Current directory:"
-
-          pwd
-
-          echo "Listing files:"
-
-          ls -la
- 
-      - name: List HTML Report Directory
-
+      # Step 5: Verify if the results file was generated
+      - name: Verify JMeter Results
         run: |
+          if (Test-Path ".\github\workflows\results.jtl") {
+            Write-Host "Results file found."
+          } else {
+            Write-Host "Error: Results file not generated!"
+            exit 1
+          }
 
-          echo "Listing HTML report directory:"
+      # Step 6: Generate JMeter HTML report from the results
+      - name: Generate JMeter HTML Report
+        run: |
+          jmeter -g .\github\workflows\results.jtl `
+                 -o .\github\workflows\report
 
-          ls -la html
- 
-      - name: Upload Results
-
+      # Step 7: Upload the generated HTML report as an artifact for review
+      - name: Upload JMeter HTML Report
         uses: actions/upload-artifact@v3
-
         with:
-
-          name: jmeter-results
-
-          path: |
-
-            result.jtl
-
-            html  # This uploads the entire HTML report folder
-
-          if-no-files-found: error
-
- 
+          name: jmeter-report
+          path: .\github\workflows\report
