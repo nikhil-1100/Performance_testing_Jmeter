@@ -34,11 +34,11 @@ jobs:
 
           # Ensure we're in the correct directory
 
-          jmeter -n -t .github/workflows/HTTP\ Request-000235.jmx \
+          jmeter -n -t HTTP_Request-000226.jmx \
 
           -l result.jtl \
 
-          -Jdata.file=.github/workflows/EdwiseCsv.csv \
+          -Jdata.file=EdwiseCsv.csv \
 
           -e -o html
  
