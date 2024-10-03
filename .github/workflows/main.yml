@@ -32,5 +32,10 @@ jobs:
         run: |
           jmeter -n -t .github/workflows/HTTP_Request-000235.jmx \
                  -l .github/workflows/results.jtl \
-                 -Jcsv_file=.github/workflows/EdwiseCsv.csv \
-                 -e -o .github/workflows/report
+                 -Jcsv_file=.github/workflows/EdwiseCsv.csv
+
+      # Generate HTML report from the results
+      - name: Generate JMeter HTML Report
+        run: |
+          jmeter -g .github/workflows/results.jtl \
+                 -o .github/workflows/report
