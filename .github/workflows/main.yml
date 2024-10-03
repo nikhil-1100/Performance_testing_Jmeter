@@ -1,5 +1,5 @@
 name: CI
- 
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
@@ -7,17 +7,17 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
- 
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
- 
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
- 
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -30,9 +30,11 @@ jobs:
       # Run JMeter using the CLI with your specific test plan and CSV file
       - name: Run JMeter Test
         run: |
-          jmeter -n -t HTTP_Request-000226.jmx
+          jmeter -n -t .github/workflows/HTTP_Request-000235.jmx \
                  -l .github/workflows/results.jtl \
-                 -Jcsv_file=EdwiseCsv.csv
+                 -Jcsv_file=.github/workflows/EdwiseCsv.csv \
+                 -Jjmeter.save.saveservice.output_format=xml \
+                 -Djm.property=xstream.allow.com.thoughtworks.xstream.security.ForbiddenClassException=org.apache.jmeter.save.ScriptWrapper
 
       # Generate HTML report from the results
       - name: Generate JMeter HTML Report
