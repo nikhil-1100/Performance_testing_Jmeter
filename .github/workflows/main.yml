@@ -30,9 +30,9 @@ jobs:
       # Run JMeter using the CLI with your specific test plan and CSV file
       - name: Run JMeter Test
         run: |
-          jmeter -n -t .github/workflows/HTTP_Request-000235.jmx \
+          jmeter -n -t HTTP_Request-000226.jmx
                  -l .github/workflows/results.jtl \
-                 -Jcsv_file=.github/workflows/EdwiseCsv.csv
+                 -Jcsv_file=EdwiseCsv.csv
 
       # Generate HTML report from the results
       - name: Generate JMeter HTML Report
