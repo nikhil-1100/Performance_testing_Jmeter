@@ -44,17 +44,12 @@ jobs:
       # Step 4: Run JMeter test
       - name: Run JMeter Test
         run: |
-          jmeter -n -t "HTTP_Request-000226.jmx" -l ".\github\workflows\results.jtl" -Jcsv_file="EdwiseCsv.csv" -Jjmeter.save.saveservice.output_format=xml
+          jmeter -n -t "HTTP_Request-000226.jmx" -l ".\github\workflows\results.jtl" -Jcsv_file="EdwiseCsv.csv" -Jjmeter.save.saveservice.output_format=xml -j ".\github\workflows\jmeter.log"
+      
 
       # Step 5: Verify if the results file was generated
       - name: Verify JMeter Results
-        run: |
-          if (Test-Path ".\github\workflows\results.jtl") {
-            Write-Host "Results file found."
-          } else {
-            Write-Host "Error: Results file not generated!"
-            exit 1
-          }
+        run:  type ".\github\workflows\jmeter.log"
 
       # Step 6: Generate JMeter HTML report from the results
       - name: Generate JMeter HTML Report
