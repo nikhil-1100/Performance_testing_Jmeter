@@ -18,9 +18,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jmeter
 
-      - name: Update JMeter Security Config
-        run: echo "org.apache.jmeter.save.ScriptWrapper" >> /usr/share/jmeter/bin/jmeter.properties
- 
+      
       - name: Run JMeter Tests
         run: |
           jmeter -n -t HTTP_Request-000226.jmx -l result.jtl -Jdata.file=EdwiseCsv.csv -e -o html
