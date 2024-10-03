@@ -44,10 +44,7 @@ jobs:
       # Step 4: Run JMeter test
       - name: Run JMeter Test
         run: |
-          jmeter -n -t HTTP_Request-000226.jmx `
-                 -l .\github\workflows\results.jtl `
-                 -Jcsv_file=EdwiseCsv.csv `
-                 -Jjmeter.save.saveservice.output_format=xml
+          jmeter -n -t "HTTP_Request-000226.jmx" -l ".\github\workflows\results.jtl" -Jcsv_file="EdwiseCsv.csv" -Jjmeter.save.saveservice.output_format=xml
 
       # Step 5: Verify if the results file was generated
       - name: Verify JMeter Results
