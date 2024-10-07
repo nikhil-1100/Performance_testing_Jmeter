@@ -1,79 +1,47 @@
-name: Automated JMeter Tests
- 
-on: 
+name: Run JMeter Tests
 
+on:
   push:
-
-    branches: 
-
+    branches:
       - main
- 
+  pull_request:
+
 jobs:
-
   automated-jmeter-tests:
-
     runs-on: ubuntu-latest
- 
+
     steps:
-
       - name: Checkout Code
-
         uses: actions/checkout@v4
- 
+
       - name: Set Up JMeter
-
         run: |
-
           sudo apt-get update
-
           sudo apt-get install -y jmeter
- 
-      - name: Run JMeter Tests
-
+      - name: List JMeter Installation
         run: |
-
-          # Ensure we're in the correct directory
-
-          jmeter -n -t script/HTTP.jmx \
-
-          -l result.jtl \
-
-       
-
-          -e -o html
- 
-      - name: List Current Directory
-
+          echo "Listing JMeter Installation:"
+          ls -la /usr/share/jmeter/bin/
+      - name: List Files in Working Directory
         run: |
-
-          echo "Current directory:"
-
-          pwd
-
-          echo "Listing files:"
-
+          echo "Listing files in the working directory:"
           ls -la
- 
-      - name: List HTML Report Directory
-
+      - name: Run JMeter Tests
         run: |
-
-          echo "Listing HTML report directory:"
-
-          ls -la html
- 
-      - name: Upload Results
-
+          jmeter -n -t "script/HTTP.jmx" -l "test_results.jtl" 
+      - name: Generate HTML Report
+        run: |
+          jmeter -g "test_results.jtl" -o "html-report"
+      - name: Upload Test Results
+        if: always()  # Ensure this step runs even if tests fail
         uses: actions/upload-artifact@v3
-
         with:
+          name: jmeter-jtl-results
+          path: test_results.jtl
 
-          name: jmeter-results
-
-          path: |
-
-            result.jtl
-
-            html  # This uploads the entire HTML report folder
-
-          if-no-files-found: error
+      - name: Upload HTML Results
+        if: always()  # Ensure this step runs even if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: jmeter-html-report
+          path: html-report
