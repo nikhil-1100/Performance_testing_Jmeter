@@ -1,40 +1,79 @@
 name: Automated JMeter Tests
  
 on: 
+
   push:
+
     branches: 
+
       - main
  
 jobs:
+
   automated-jmeter-tests:
-    runs-on: ubantu-latest
+
+    runs-on: ubuntu-latest
  
     steps:
+
       - name: Checkout Code
+
         uses: actions/checkout@v4
  
       - name: Set Up JMeter
-        run: sudo apt-get install -y jmeter  
- 
-      - name: Check jmeter version
-        run: jmeter -v # This creates both the results folder and the html folder inside it
+
+        run: |
+
+          sudo apt-get update
+
+          sudo apt-get install -y jmeter
  
       - name: Run JMeter Tests
-        run: jmeter -n -t ".github/workflows/HTTP.jmx" -l ".github/workflows/results/result.jtl" -e -o ".github/workflows/html"
+
+        run: |
+
+          # Ensure we're in the correct directory
+
+          jmeter -n -t script/HTTP.jmx \
+
+          -l result.jtl \
+
+       
+
+          -e -o html
  
-      # - name: List Results Directory
-      #   run: 
-      #     echo "Listing results directory:"
-      #     ls -la results
+      - name: List Current Directory
+
+        run: |
+
+          echo "Current directory:"
+
+          pwd
+
+          echo "Listing files:"
+
+          ls -la
+ 
+      - name: List HTML Report Directory
+
+        run: |
+
+          echo "Listing HTML report directory:"
+
+          ls -la html
  
       - name: Upload Results
+
         uses: actions/upload-artifact@v3
+
         with:
+
           name: jmeter-results
-          path: .github/workflows/results/result.jtl
-      - name: Upload Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: jmeter-results
-          path: .github/workflows/html  # This uploads the entire HTML report folder
+
+          path: |
+
+            result.jtl
+
+            html  # This uploads the entire HTML report folder
+
           if-no-files-found: error
