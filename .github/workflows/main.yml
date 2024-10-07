@@ -23,7 +23,7 @@ jobs:
       # Run JMeter Test (.jmx file)
       - name: Run JMeter test
         run: |
-          jmeter -n -t script/HTTP.jmx -l results.jtl
+          jmeter -n -t EdwiseCsv.csv -l results.jtl
 
       # Upload test results as artifacts (optional)
       - name: Upload JMeter Results
